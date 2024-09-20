@@ -26,12 +26,14 @@ app.prepare().then(() => {
 
 	router.post("/orders", koaBody(), async (ctx) => {
 		const url = "https://platform.logisticswise.ge/api/shopify_place_order";
+		const mergedJSON = { ...ctx.request.headers, ...ctx.request.body };
 		fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(ctx.request.headers, ctx.request.body),
+			
+			body: JSON.stringify(mergedJSON),
 		}).then((response) => response.json());
 
 		ctx.body = { message: "Success" };
