@@ -1,14 +1,11 @@
 require("isomorphic-fetch");
-const dotenv = require("dotenv");
-dotenv.config();
 const Koa = require("koa");
 const next = require("next");
 const Router = require("koa-router");
 const { koaBody } = require("koa-body");
-const verifyHmac = require("./utils/verifyHmac");
+const { getOfflineAccessToken } = require("./utils/shopifyAuth");
 
-const dev = process.env.NODE_ENV !== "production";
-const app = next({ dev });
+const app = next({ dev: true });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -21,13 +18,23 @@ app.prepare().then(() => {
     };
 
     router.get("/", async (ctx) => {
-        var shop = ctx.query.shop;
+        const { shop, id_token } = ctx.query;
+
+        if (shop && id_token) {
+            try {
+                await getOfflineAccessToken(shop, id_token);
+            } catch (error) {
+                console.error("Token exchange failed:", error.message);
+            }
+        }
+
         await handleRequest(ctx);
     });
 
     router.post("/orders", koaBody(), async (ctx) => {
         const url = "https://platform.logisticswise.ge/api/shopify_place_order";
         const mergedJSON = { ...ctx.request.headers, ...ctx.request.body };
+        console.log("Merged JSON:", mergedJSON);
         fetch(url, {
             method: "POST",
             headers: {
@@ -157,64 +164,6 @@ app.prepare().then(() => {
         }
     });
 
-    router.get("/auth/callback", async (ctx) => {
-        try {
-            const { shop, code, hmac } = ctx.query;
-
-            if (!shop || !code || !hmac) {
-                ctx.status = 400;
-                ctx.body = "Missing required parameters: shop, code, hmac";
-                return;
-            }
-
-            if (!verifyHmac(ctx.query, process.env.SHOPIFY_CLIENT_SECRET)) {
-                ctx.status = 400;
-                ctx.body = "Invalid HMAC";
-                return;
-            }
-
-            const tokenResponse = await fetch(
-                `https://${shop}/admin/oauth/access_token`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        client_id: process.env.SHOPIFY_CLIENT_ID,
-                        client_secret: process.env.SHOPIFY_CLIENT_SECRET,
-                        code,
-                    }),
-                },
-            );
-
-            if (!tokenResponse.ok) {
-                ctx.status = tokenResponse.status;
-                ctx.body = `Error exchanging code for token: ${tokenResponse.statusText}`;
-                return;
-            }
-
-            const { access_token } = await tokenResponse.json();
-
-            console.log(`Access token for shop ${shop}: ${access_token}`);
-
-            await fetch(
-                "https://platform.logisticswise.ge/api/shopify_recive_token",
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        shopName: shop,
-                        shopToken: access_token,
-                    }),
-                },
-            );
-
-            ctx.body = { message: "Success" };
-        } catch (error) {
-            ctx.status = 500;
-            ctx.body = `Internal server error: ${error.message}`;
-        }
-    });
-
     router.get("(/_next/static/.*)", handleRequest);
     router.get("/_next/webpack-hmr", handleRequest);
     router.get("(.*)", handleRequest);
@@ -222,7 +171,6 @@ app.prepare().then(() => {
     server.use(router.allowedMethods());
     server.use(router.routes());
 
-    console.log("It's a Development Server");
     server.listen(3000, () => {
         console.log(`> Ready on http://localhost:${3000}`);
     });

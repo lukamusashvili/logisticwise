@@ -1,7 +1,7 @@
 ﻿# აპლიკაციის დაინსტალირება
 
-npm run install
-npm run dev
+1. npm run install
+2. npm run dev
 
 # მაღაზიის დამატება
 
@@ -11,8 +11,8 @@ npm run dev
 2. App name - logisticswise-mova
 3. App URL - https://cfe0-176-221-193-106.ngrok-free.app
 4. Scopes - write_inventory,read_orders,read_products
-5. ვაჭერთ Release. იქმნება ახალი ვერსია
-6. გადავდივართ Overview-ში, ვაჭერთ Select distribution method
+5. ვაჭერთ Release 2ჯერ. იქმნება ახალი ვერსია
+6. გადავდივართ აპლიკაციის Overview-ში, ვაჭერთ Select distribution method
 7. ვირჩევთ Custom distribution-ს
 8. ვწერთ მაღაზიის myshopify სახელს "https://admin.shopify.com/store/wemid3-0x"
 9. ვაჭერთ გენერირებას
@@ -29,5 +29,5 @@ npm run dev
 4. Event - Order payment
 5. Format - JSON
 6. URL - https://cfe0-176-221-193-106.ngrok-free.app
-7. Webhook API version - stable ვერსია რომელიცაა. წესით მეორე ეწერება.
+7. Webhook API version - Latest ვერსია რომელიცაა. წესით მეორე ეწერება.
 8. ვაჭერთ save-ს.
