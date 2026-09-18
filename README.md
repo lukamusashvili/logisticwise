@@ -12,14 +12,15 @@
 3. App URL - https://cfe0-176-221-193-106.ngrok-free.app
 4. Scopes - write_inventory,read_orders,read_products
 5. ვაჭერთ Release 2ჯერ. იქმნება ახალი ვერსია
-6. გადავდივართ აპლიკაციის Overview-ში, ვაჭერთ Select distribution method
-7. ვირჩევთ Custom distribution-ს
-8. ვწერთ მაღაზიის myshopify სახელს "https://admin.shopify.com/store/wemid3-0x"
-9. ვაჭერთ გენერირებას
-10. ვაკოპირებთ ლინკს
-11. თუ წვდომა გვაქვს მაღაზიაზე, გადავდივართ მათთან და ვხსნით მოკოპირებულ ლინკს
-12. ვაინსტალირებთ აპლიკაციას
-13. მაღაზიის myshopify სახელი და ტოკენი გადაიგზავნება logisticswise php პლატფორმაზე
+6. ვაჭერთ App settings-ს, ვაკოპირებთ Client ID-ს და Secret-ს და ვსვავთ logisticswise პროფილში შესაბამის ველებში.
+7. გადავდივართ აპლიკაციის Overview-ში, ვაჭერთ Select distribution method
+8. ვირჩევთ Custom distribution-ს
+9. ვწერთ მაღაზიის myshopify სახელს "https://admin.shopify.com/store/wemid3-0x"
+10. ვაჭერთ გენერირებას
+11. ვაკოპირებთ ლინკს
+12. თუ წვდომა გვაქვს მაღაზიაზე, გადავდივართ მათთან და ვხსნით მოკოპირებულ ლინკს
+13. ვაინსტალირებთ აპლიკაციას
+14. მაღაზიის myshopify სახელი და ტოკენი გადაიგზავნება logisticswise php პლატფორმაზე
 
 # ვებჰუკის დამატება
 

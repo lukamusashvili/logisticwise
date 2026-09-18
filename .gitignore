@@ -6,7 +6,6 @@
 # Node artifact files
 node_modules/
 .next/
-package-lock.json
 dist/
 docs.txt
 

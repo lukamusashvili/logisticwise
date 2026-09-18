@@ -1,4 +1,3 @@
-// TODO: confirm these with the PHP dev once the endpoint exists.
 const CREDENTIALS_URL =
     "https://platform.logisticswise.ge/api/shopify_receive_client_info";
 const RECEIVE_TOKEN_URL =
