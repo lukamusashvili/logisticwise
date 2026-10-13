@@ -10,7 +10,7 @@
 1. შევქმნა ახალი აპლიკაცია dev dashboard-ზე.
 2. App name - logisticswise-mova
 3. App URL - https://logisticswise.ge/shopify
-4. Scopes - write_inventory,read_orders,read_products
+4. Scopes - write_inventory,read_orders,read_products,read_locations
 5. ვაჭერთ Release 2ჯერ. იქმნება ახალი ვერსია
 6. ვაჭერთ App settings-ს, ვაკოპირებთ Client ID-ს და Secret-ს და ვსვავთ logisticswise პროფილში შესაბამის ველებში.
 7. გადავდივართ აპლიკაციის Overview-ში, ვაჭერთ Select distribution method

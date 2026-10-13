@@ -4,6 +4,9 @@ const next = require("next");
 const Router = require("koa-router");
 const { koaBody } = require("koa-body");
 const { getOfflineAccessToken } = require("./utils/shopifyAuth");
+const getProduct = require("./graphql/products/getProduct");
+const getProducts = require("./graphql/products/getProducts");
+const updateInventoryItemQuantity = require("./graphql/inventory/updateInventoryItemQuantity");
 
 const app = next({ dev: true });
 const handle = app.getRequestHandler();
@@ -47,59 +50,16 @@ app.prepare().then(() => {
     });
 
     router.put("/quantity", koaBody(), async (ctx) => {
-        const shopName = ctx.request.body.shopName;
-        const shopToken = ctx.request.body.shopToken;
-        const inventory_item_id = ctx.request.body.inventory_item_id;
-        const available = ctx.request.body.available;
+        const { shopName, shopToken, inventory_item_id, available } =
+            ctx.request.body;
 
         try {
-            const response = await fetch(
-                `https://${shopName}/admin/api/2024-04/shop.json`,
-                {
-                    headers: {
-                        "X-Shopify-Access-Token": shopToken,
-                    },
-                },
+            ctx.body = await updateInventoryItemQuantity(
+                `https://${shopName}/admin/api/2026-07/graphql.json`,
+                shopToken,
+                inventory_item_id,
+                available,
             );
-
-            if (!response.ok) {
-                ctx.status = response.status;
-                ctx.body = `Error fetching shop details: ${response.statusText}`;
-                return;
-            }
-
-            const shopDetails = await response.json();
-            const locationId = shopDetails.shop.primary_location_id;
-
-            try {
-                const response = await fetch(
-                    `https://${shopName}/admin/api/2024-04/inventory_levels/set.json`,
-                    {
-                        method: "POST",
-                        body: JSON.stringify({
-                            location_id: locationId,
-                            inventory_item_id: inventory_item_id,
-                            available: available,
-                        }),
-                        headers: {
-                            "X-Shopify-Access-Token": shopToken,
-                            "Content-Type": "application/json",
-                        },
-                    },
-                );
-
-                if (!response.ok) {
-                    ctx.status = response.status;
-                    ctx.body = `Error adjusting inventary levels: ${response.statusText}`;
-                    return;
-                }
-
-                const shopDetails = await response.json();
-                ctx.body = shopDetails;
-            } catch (error) {
-                ctx.status = 500;
-                ctx.body = `Internal server error: ${error.message}`;
-            }
         } catch (error) {
             ctx.status = 500;
             ctx.body = `Internal server error: ${error.message}`;
@@ -107,27 +67,21 @@ app.prepare().then(() => {
     });
 
     router.post("/product", koaBody(), async (ctx) => {
-        const shopName = ctx.request.body.shopName;
-        const shopToken = ctx.request.body.shopToken;
-        const productID = ctx.request.body.productID;
+        const { shopName, shopToken, productID } = ctx.request.body;
 
         try {
-            const response = await fetch(
-                `https:/${shopName}/admin/api/2024-04/products/${productID}.json`,
-                {
-                    headers: {
-                        "X-Shopify-Access-Token": shopToken,
-                    },
-                },
+            const productDetails = await getProduct(
+                `https://${shopName}/admin/api/2026-07/graphql.json`,
+                shopToken,
+                productID,
             );
 
-            if (!response.ok) {
-                ctx.status = response.status;
-                ctx.body = `Error fetching product details: ${response.statusText}`;
+            if (!productDetails) {
+                ctx.status = 404;
+                ctx.body = "Error fetching product details: Not Found";
                 return;
             }
 
-            const productDetails = await response.json();
             ctx.body = productDetails;
         } catch (error) {
             ctx.status = 500;
@@ -136,27 +90,13 @@ app.prepare().then(() => {
     });
 
     router.post("/products", koaBody(), async (ctx) => {
-        const shopName = ctx.request.body.shopName;
-        const shopToken = ctx.request.body.shopToken;
+        const { shopName, shopToken } = ctx.request.body;
 
         try {
-            const response = await fetch(
-                `https:/${shopName}/admin/api/2024-04/products.json`,
-                {
-                    headers: {
-                        "X-Shopify-Access-Token": shopToken,
-                    },
-                },
+            ctx.body = await getProducts(
+                `https://${shopName}/admin/api/2026-07/graphql.json`,
+                shopToken,
             );
-
-            if (!response.ok) {
-                ctx.status = response.status;
-                ctx.body = `Error fetching product details: ${response.statusText}`;
-                return;
-            }
-
-            const productDetails = await response.json();
-            ctx.body = productDetails;
         } catch (error) {
             ctx.status = 500;
             ctx.body = `Internal server error: ${error.message}`;
